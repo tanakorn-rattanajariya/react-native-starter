@@ -1,21 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { connect, Provider } from "react-redux";
+import store from "./redux/store";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button } from "components";
+import {  Toast, WingBlank } from "@ant-design/react-native";
+import { useNReduxDispatcher, useNReduxMapping } from "nredux";
+import Routing from "./Routing";
 
-export default function App() {
+
+const RootConnect = connect(useNReduxMapping, useNReduxDispatcher)(Root);
+function Root(props) {
+  return <Routing {...props} />;
+}
+export default function App(props) {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <RootConnect />
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
