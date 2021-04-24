@@ -7,7 +7,7 @@ const TYPE = ["SUCCESS", "FAIL", "LOADING", "COMPLETE"];
 const services = [];
 const interacts = [];
 function createCRUDE(base, is_interact) {
-  return APIs.reduce((acc, type) => {
+  return api.reduce((acc, type) => {
     acc[type] = is_interact ? `${base}_${type}` : createType(`${base}_${type}`);
     return acc;
   }, {});
@@ -24,25 +24,51 @@ const COMPONENT = createType("COMPONENT");
 //STATION
 function createDoc(base, docs, is_interact) {
   return docs.reduce((acc, type) => {
-    acc[type] = createCRUDE(`${base}_${type}`, is_interact);
+    acc[type] = createCRUDE(`${base}_${type.toUpperCase()}`, is_interact);
     return acc;
   }, {});
 }
-function createAPI(base) {
-  return (classes || [])
-    .map((v) => v.toUpperCase())
-    .reduce((acc, type) => {
-      acc[type] = createDoc(`${base}_${type}`, services);
-      return acc;
-    }, {});
+function createAPI() {
+  return api.reduce(
+    (c, d) => ({
+      ...c,
+      [d.toUpperCase()]: classes.reduce(
+        (e, f) => ({
+          ...e,
+          [f.toUpperCase()]: APIs.reduce(
+            (g, h) => ({
+              ...g,
+              [h]: TYPE.reduce(
+                (i, j) => ({
+                  ...i,
+                  [j]: `API_${d.toUpperCase()}_${f.toUpperCase()}_${h}_${j}`,
+                }),
+                {}
+              ),
+            }),
+            {}
+          ),
+        }),
+        {}
+      ),
+    }),
+    {}
+  );
 }
-function createInteract(base) {
-  return (classes || [])
-    .map((v) => v.toUpperCase())
-    .reduce((acc, type) => {
-      acc[type] = createDoc(`${base}_${type}`, interacts, true);
-      return acc;
-    }, {});
+function createInteract() {
+  return classes.reduce(
+    (e, f) => ({
+      ...e,
+      [f.toUpperCase()]: APIs.reduce(
+        (g, h) => ({
+          ...g,
+          [h]: `INTERACT_${f.toUpperCase()}_${h}`,
+        }),
+        {}
+      ),
+    }),
+    {}
+  );
 }
 
 const requests = (api || []).reduce(
@@ -53,7 +79,9 @@ const requests = (api || []).reduce(
   {}
 );
 
-const API = createAPI("API");
-const INTERACT = createInteract("INTERACT");
+const API = createAPI();
+const INTERACT = createInteract();
 const INTERACT_REQUEST = "INTERACT_REQUEST";
-export { API, COMPONENT, INTERACT_REQUEST, INTERACT,requests };
+const types = { ...requests };
+export { API, COMPONENT, INTERACT_REQUEST, INTERACT };
+export default types;
