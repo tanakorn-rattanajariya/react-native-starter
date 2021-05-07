@@ -7,12 +7,13 @@ function replaceString(str) {
   )}`;
   var newStr = "";
   for (var i = 0; i < toCamel.length; i++) {
-    if (toCamel[i] === "-") {
+    if (toCamel[i] === "-" || toCamel[i] === "_") {
       if (toCamel.length > i + 1) {
         newStr += toCamel[i + 1].toUpperCase();
         i += 2;
       }
     }
+    
     newStr += toCamel[i];
   }
   return newStr;

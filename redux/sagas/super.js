@@ -1,7 +1,7 @@
 import { put, fork, call, take, takeEvery, throttle } from "redux-saga/effects";
 import { COMPONENT, API, INTERACT } from "../actions/type";
 import service from "../services";
-
+import Router from "next/router";
 function* success(data) {
   yield put({
     type: COMPONENT.SUCCESS,
@@ -36,9 +36,13 @@ function* loading(component) {
  * @param id id of object
  * @param context additional text in service
  **/
-function* get({ uri, doc, id, context, mcs }) {
-  const _loading = `loading_${uri.replace(/-/g, "_").toLowerCase()}`;
-  const _uri = `/${uri}${context ? context : ""}${id ? `/${id}` : ""}`;
+function* get({ doc, id, context, mcs }) {
+  const _uri = `${
+    mcs ? `${mcs.toLowerCase()}/` : ""
+  }${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
+    id ? `/${id}` : ""
+  }`;
+  const _loading = `loading_${doc.toLowerCase().replace(/-/g, "_")}`;
   try {
     yield call(loading, _loading);
     let response = yield call(service.get, _uri);
@@ -60,7 +64,9 @@ function* get({ uri, doc, id, context, mcs }) {
  * @param item payload in project
  **/
 function* list({ doc, item, id, mcs }) {
-  const _uri = `${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
+  const _uri = `${
+    mcs ? `${mcs.toLowerCase()}/` : ""
+  }${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
     id ? `/${id}` : ""
   }`;
   const _loading = `loading_${doc.toLowerCase().replace(/-/g, "_")}`;
@@ -90,7 +96,9 @@ function* list({ doc, item, id, mcs }) {
  * @param router router for react native
  **/
 function* post({ doc, item, id, isback = true, router, mcs }) {
-  const _uri = `${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
+  const _uri = `${
+    mcs ? `${mcs.toLowerCase()}/` : ""
+  }${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
     id ? `/${id}` : ""
   }`;
   const _loading = `loading_${doc.toLowerCase().replace(/-/g, "_")}`;
@@ -106,7 +114,7 @@ function* post({ doc, item, id, isback = true, router, mcs }) {
     } else {
       yield call(complete, _loading);
     }
-    return isback && router?.goBack();
+    return isback && Router.back();
   } catch (e) {
     console.log(e);
     yield call(error, e?.response?.request?.responseText);
@@ -124,7 +132,9 @@ function* post({ doc, item, id, isback = true, router, mcs }) {
  * @param context additional text in service
  **/
 function* update({ doc, item, id, context, props = {}, mcs }) {
-  const _uri = `${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
+  const _uri = `${
+    mcs ? `${mcs.toLowerCase()}/` : ""
+  }${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
     id ? `/${id}` : ""
   }`;
   const _loading = `loading_${doc.toLowerCase().replace(/-/g, "_")}`;
@@ -152,7 +162,11 @@ function* update({ doc, item, id, context, props = {}, mcs }) {
  **/
 function* del({ doc, uri, id, context, mcs }) {
   const _loading = `loading_${uri.replace(/-/g, "_").toLowerCase()}`;
-  const _uri = `${uri}${context ? context : ""}${id ? `/${id}` : ""}`;
+  const _uri = `${
+    mcs ? `${mcs.toLowerCase()}/` : ""
+  }${doc.toLowerCase().replace(/-/g, "/").replace(/_/g, "-")}${
+    id ? `/${id}` : ""
+  }`;
   try {
     yield call(loading, _loading);
     let response = yield call(service.delete, _uri);
@@ -161,8 +175,9 @@ function* del({ doc, uri, id, context, mcs }) {
       data: response.data,
     });
     yield call(success, _loading);
-    return history.back();
+    return Router.back();
   } catch (e) {
+    console.log(e);
     yield call(error, e?.response?.request?.responseText);
     yield call(complete);
   }

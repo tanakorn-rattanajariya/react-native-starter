@@ -27,14 +27,15 @@ function* request(actions) {
 }
 
 function* clear(actions) {
-  const { doc } = actions;
+  const { doc, mcs } = actions;
   yield call(_super.clear, {
     uri: doc.replace(/_/g, "-").toLowerCase(),
     doc,
+    mcs,
   });
 }
 function* get(actions) {
-  const { item, doc, id, props } = actions;
+  const { item, doc, id, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -43,6 +44,7 @@ function* get(actions) {
           item,
           doc,
           id,
+          mcs,
         });
     }
   } catch (e) {
@@ -51,7 +53,7 @@ function* get(actions) {
   }
 }
 function* post(actions) {
-  const { item, doc, id, props } = actions;
+  const { item, doc, id, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -60,7 +62,8 @@ function* post(actions) {
           item,
           doc,
           isback: props ? true : props?.isback,
-          router:props?.router
+          router: props?.router,
+          mcs,
         });
     }
   } catch (e) {
@@ -68,7 +71,7 @@ function* post(actions) {
   }
 }
 function* change(actions) {
-  const { item, id, doc, props } = actions;
+  const { item, id, doc, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -78,6 +81,7 @@ function* change(actions) {
           doc,
           id,
           props,
+          mcs,
         });
     }
   } catch (e) {
@@ -86,7 +90,7 @@ function* change(actions) {
   }
 }
 function* patch(actions) {
-  const { item, id, doc, props } = actions;
+  const { item, id, doc, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -96,6 +100,7 @@ function* patch(actions) {
           doc,
           id,
           props,
+          mcs,
         });
     }
   } catch (e) {
@@ -105,7 +110,7 @@ function* patch(actions) {
 }
 
 function* del(actions) {
-  const { id, doc, props } = actions;
+  const { id, doc, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -114,6 +119,7 @@ function* del(actions) {
           doc,
           id,
           isback: props?.isback ? true : false,
+          mcs,
         });
     }
   } catch (e) {
@@ -121,7 +127,7 @@ function* del(actions) {
   }
 }
 function* list(actions) {
-  const { item, doc, id, props } = actions;
+  const { item, doc, id, props, mcs } = actions;
   try {
     yield call(_super.loading);
     switch (actions.doc) {
@@ -130,6 +136,7 @@ function* list(actions) {
           item,
           doc,
           id,
+          mcs,
         });
     }
   } catch (e) {
@@ -137,7 +144,7 @@ function* list(actions) {
     return yield call(_super.error, e);
   }
 }
-export function* example() {
-  const { EXAMPLE_REQUEST } = types;
-  yield takeEvery(EXAMPLE_REQUEST, request);
+export function* matching() {
+  const { MATCHING_REQUEST } = types;
+  yield takeEvery(MATCHING_REQUEST, request);
 }
